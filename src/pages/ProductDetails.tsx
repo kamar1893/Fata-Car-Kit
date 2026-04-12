@@ -1,210 +1,162 @@
+
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
-import { ShoppingCart, Minus, Plus, ArrowLeft } from "lucide-react";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
-import ProductCard from "../components/ProductCard";
-import { products } from "../data/products";
-import { useCart } from "../context/CartContext";
+
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+  description: string;
+  countInStock: number;
+}
 
 const ProductDetails = () => {
-  const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
-  const { addToCart } = useCart();
-  const [qty, setQty] = useState(1);
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!product) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
-        <NavBar />
-        <div style={{ padding: "60px 30px", textAlign: "center" }}>
-          <p style={{ color: "#aaa" }}>Product not found.</p>
-          <Link to="/products">
-            <button
-              style={{
-                marginTop: "16px",
-                padding: "10px 18px",
-                background: "#ff4d4d",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Back to Products
-            </button>
-          </Link>
-        </div>
-        <Footer />
-      </div>
-    );
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        if (!id) {
+          setError("Missing product id");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`http://localhost:5000/api/products/${id}`);
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        setProduct(data);
+      } catch (err: any) {
+        console.error("DETAILS ERROR:", err);
+        setError(err.message || "Failed to load product");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return <div style={{ padding: "40px", color: "white" }}>Loading...</div>;
   }
 
-  const related = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  if (error) {
+    return <div style={{ padding: "40px", color: "white" }}>{error}</div>;
+  }
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < qty; i++) {
-      addToCart(product);
-    }
-    alert("Added to cart");
-  };
+  if (!product) {
+    return <div style={{ padding: "40px", color: "white" }}>Product not found</div>;
+  }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
-      <NavBar />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        color: "white",
+        padding: "40px",
+      }}
+    >
+      <Link
+        to="/products"
+        style={{
+          display: "inline-block",
+          marginBottom: "24px",
+          color: "#a5b4fc",
+          textDecoration: "none",
+          fontSize: "18px",
+        }}
+      >
+        ← Back to Products
+      </Link>
 
-      <div style={{ padding: "30px" }}>
-        <Link
-          to="/products"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "#aaa",
-            textDecoration: "none",
-            marginBottom: "24px",
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to Products
-        </Link>
-
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.2fr 1fr",
+          gap: "40px",
+          alignItems: "start",
+        }}
+      >
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "40px",
-            alignItems: "start",
+            width: "100%",
+            borderRadius: "20px",
+            overflow: "hidden",
+            background: "#111",
+            maxWidth: "700px",
+            margin: "0 auto",
           }}
         >
-          <div
+          <img
+            src={`http://localhost:5000${product.image}`}
+            alt={product.name}
             style={{
-              border: "1px solid #333",
-              borderRadius: "12px",
-              overflow: "hidden",
-              background: "#111",
+              width: "100%",
+              height: "auto",
+              display: "block",
             }}
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              style={{ width: "100%", height: "420px", objectFit: "cover" }}
-            />
-          </div>
-
-          <div>
-            <p
-              style={{
-                color: "#ff4d4d",
-                fontSize: "14px",
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-            >
-              {product.category}
-            </p>
-
-            <h1 style={{ fontSize: "36px", margin: "10px 0" }}>{product.name}</h1>
-
-            <p style={{ fontSize: "32px", fontWeight: "bold", color: "#ff4d4d" }}>
-              ${product.price.toFixed(2)}
-            </p>
-
-            <p style={{ marginTop: "20px", color: "#ccc", lineHeight: "1.7" }}>
-              {product.description}
-            </p>
-
-            <div
-              style={{
-                marginTop: "30px",
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-                flexWrap: "wrap",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: "1px solid #444",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                }}
-              >
-                <button
-                  onClick={() => setQty(Math.max(1, qty - 1))}
-                  style={{
-                    padding: "10px 14px",
-                    background: "#111",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Minus size={16} />
-                </button>
-
-                <span style={{ width: "40px", textAlign: "center" }}>{qty}</span>
-
-                <button
-                  onClick={() => setQty(qty + 1)}
-                  style={{
-                    padding: "10px 14px",
-                    background: "#111",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 20px",
-                  background: "#ff4d4d",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                <ShoppingCart size={16} />
-                Add to Cart
-              </button>
-            </div>
-          </div>
+            onError={(e) => {
+              e.currentTarget.src =
+                "https://via.placeholder.com/900x650?text=No+Image";
+            }}
+          />
         </div>
 
-        {related.length > 0 && (
-          <div style={{ marginTop: "60px" }}>
-            <h2 style={{ fontSize: "28px", marginBottom: "20px" }}>Related Products</h2>
+        <div style={{ paddingTop: "20px" }}>
+          <h1 style={{ fontSize: "52px", margin: "0 0 18px", lineHeight: 1.1 }}>
+            {product.name}
+          </h1>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                gap: "20px",
-              }}
-            >
-              {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          </div>
-        )}
+          <p style={{ color: "#9ca3af", fontSize: "24px", margin: "0 0 24px" }}>
+            {product.category}
+          </p>
+
+          <h2 style={{ fontSize: "44px", margin: "0 0 28px" }}>
+            ${product.price}
+          </h2>
+
+          <p
+            style={{
+              lineHeight: 1.8,
+              fontSize: "22px",
+              color: "#e5e7eb",
+              marginBottom: "26px",
+            }}
+          >
+            {product.description}
+          </p>
+
+          <p style={{ fontSize: "24px", marginBottom: "28px" }}>
+            Stock: {product.countInStock}
+          </p>
+
+          <button
+            style={{
+              padding: "16px 28px",
+              border: "none",
+              borderRadius: "14px",
+              background: "#ff5757",
+              color: "white",
+              fontWeight: 700,
+              fontSize: "20px",
+              cursor: "pointer",
+            }}
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
-
-      <Footer />
     </div>
   );
 };
