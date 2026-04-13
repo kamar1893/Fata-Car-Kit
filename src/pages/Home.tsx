@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
+import { productsData } from "../data/products";
 
 interface Product {
   _id: string;
@@ -13,27 +14,8 @@ interface Product {
 }
 
 function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/products");
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Failed to fetch home products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const products: Product[] = productsData;
+  const loading = false;
 
   const featuredProducts = useMemo(() => products.slice(0, 4), [products]);
 
@@ -317,6 +299,7 @@ function Home() {
           )}
         </div>
       </section>
+
       <Footer />
     </div>
   );

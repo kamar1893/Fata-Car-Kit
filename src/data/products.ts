@@ -1,34 +1,147 @@
-export const products = [
+export interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+  description: string;
+  countInStock: number;
+}
+
+export const productsData: Product[] = [
   {
-    id: 1,
-    name: "RGB LED Interior Light Strip Kit",
-    price: 29.99,
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
-    category: "LED Interior Lights",
-    description: "Premium RGB lighting kit for car interior decoration."
+    _id: "1",
+    name: "Light Ring 16 Colors",
+    price: 34,
+    category: "Accessories",
+    image: "/images/Accessories/acc1.jpg",
+    description: "16 custom Colors. Wireless Control. Dynamic Modes.",
+    countInStock: 10,
   },
   {
-    id: 2,
-    name: "Premium Leather Steering Wheel Cover",
-    price: 24.99,
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=800&q=80",
-    category: "Steering Wheel Covers",
-    description: "Comfortable and stylish steering wheel cover."
+    _id: "2",
+    name: "Tornado Air Inflator",
+    price: 20,
+    category: "Accessories",
+    image: "/images/Accessories/acc2.jpg",
+    description: "High performance finish. Guaranteed fit. 35L capacity.",
+    countInStock: 10,
   },
   {
-    id: 3,
-    name: "Universal Car Seat Cover Set",
-    price: 89.99,
-    image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=800&q=80",
-    category: "Seat Covers",
-    description: "Elegant seat cover set for most vehicles."
+    _id: "3",
+    name: "1000 AMP",
+    price: 20,
+    category: "Accessories",
+    image: "/images/Accessories/acc3.jpg",
+    description: "Industrial strength. Easy to use.",
+    countInStock: 10,
   },
   {
-    id: 4,
-    name: "All-Weather Heavy Duty Floor Mats",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=800&q=80",
-    category: "Floor Mats",
-    description: "Durable mats that protect your car floor."
-  }
+    _id: "4",
+    name: "2-Ton Hydraulic Floor Jack",
+    price: 29,
+    category: "Accessories",
+    image: "/images/Accessories/acc4.jpg",
+    description: "Industrial strength. Easy to use.",
+    countInStock: 10,
+  },
+  {
+    _id: "5",
+    name: "Cup Holder",
+    price: 4,
+    category: "Accessories",
+    image: "/images/Accessories/acc5.jpg",
+    description: "High-performance finish. Guaranteed fit.",
+    countInStock: 10,
+  },
+  {
+    _id: "6",
+    name: "High Performance Air Filter(HKS)",
+    price: 15,
+    category: "Accessories",
+    image: "/images/Accessories/acc6.jpg",
+    description: "High-performance finish. Guaranteed fit.",
+    countInStock: 10,
+  },
+  {
+    _id: "7",
+    name: "Front Spoiler BmW E90 Alpina",
+    price: 24,
+    category: "FrontLip",
+    image: "/images/FrontLip/front1.jpg",
+    description: "Authentic Design. Precision Molded. Aerodynamic Finish.",
+    countInStock: 10,
+  },
+  {
+    _id: "8",
+    name: "Front Spoiler Bmw E46 alpina",
+    price: 24,
+    category: "FrontLip",
+    image: "/images/FrontLip/front2.jpg",
+    description: "Alpina Aero Design. Precision Molded. Primed Finish.",
+    countInStock: 10,
+  },
+  {
+    _id: "9",
+    name: "Front Spoiler BmW F30",
+    price: 24,
+    category: "FrontLip",
+    image: "/images/FrontLip/front3.jpg",
+    description: "High-Gloss Finish. Guaranteed Fit. Precision Molded.",
+    countInStock: 10,
+  },
+  {
+    _id: "10",
+    name: "Front Spoiler Camaro 2013",
+    price: 30,
+    category: "FrontLip",
+    image: "/images/FrontLip/front4.jpg",
+    description: "Authentic Design. Precision Molded. Aerodynamic Finish.",
+    countInStock: 10,
+  },
+  {
+    _id: "11",
+    name: "Front Spoiler Camaro 2013 Sport",
+    price: 30,
+    category: "FrontLip",
+    image: "/images/FrontLip/front5.jpg",
+    description: "Authentic Design. Precision Molded. Aerodynamic Finish.",
+    countInStock: 10,
+  },
+  {
+    _id: "12",
+    name: "Front Spoiler W203",
+    price: 24,
+    category: "FrontLip",
+    image: "/images/FrontLip/front6.jpg",
+    description: "High-Gloss Finish. Guaranteed Fit. Precision Molded.",
+    countInStock: 10,
+  },
+  {
+    _id: "13",
+    name: "Rear Spoiler For Kia Picanto",
+    price: 24,
+    category: "RearSpoiler",
+    image: "/images/RearSpoiler/rear1.jpg",
+    description: "Dynamic Aero Styling. Precision Molded. Direct Bolt-On.",
+    countInStock: 10,
+  },
+  {
+    _id: "14",
+    name: "Rear Spoiler BmW E92 M4",
+    price: 24,
+    category: "RearSpoiler",
+    image: "/images/RearSpoiler/rear2.jpg",
+    description: "Aero Design. Carbon Fiber. Precision Molded. Direct Bolt-On.",
+    countInStock: 10,
+  },
+  {
+    _id: "15",
+    name: "Glass Spoiler BmW E39",
+    price: 24,
+    category: "RoofSpoiler",
+    image: "/images/RoofSpoiler/roof1.jpg",
+    description: "High-Performance Finish. Guaranteed Fit. Precision Engineering.",
+    countInStock: 10,
+  },
 ];

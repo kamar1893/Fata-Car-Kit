@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { productsData } from "../data/products";
 
 interface Product {
   _id: string;
@@ -12,32 +13,11 @@ interface Product {
 }
 
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/products");
-
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
-        }
-
-        const data = await res.json();
-        setProducts(data);
-      } catch (err: any) {
-        console.error("FETCH ERROR:", err);
-        setError(err.message || "Failed to load products");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const products: Product[] = productsData;
+  const loading = false;
+  const error = "";
 
   const categories = useMemo(() => {
     const unique = Array.from(new Set(products.map((p) => p.category)));

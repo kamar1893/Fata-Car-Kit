@@ -1,6 +1,5 @@
-
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { productsData } from "../data/products";
 
 interface Product {
   _id: string;
@@ -14,48 +13,14 @@ interface Product {
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        if (!id) {
-          setError("Missing product id");
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        setProduct(data);
-      } catch (err: any) {
-        console.error("DETAILS ERROR:", err);
-        setError(err.message || "Failed to load product");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
-
-  if (loading) {
-    return <div style={{ padding: "40px", color: "white" }}>Loading...</div>;
-  }
-
-  if (error) {
-    return <div style={{ padding: "40px", color: "white" }}>{error}</div>;
-  }
+  const product: Product | undefined = productsData.find((p) => p._id === id);
 
   if (!product) {
-    return <div style={{ padding: "40px", color: "white" }}>Product not found</div>;
+    return (
+      <div style={{ padding: "40px", color: "white", background: "#000", minHeight: "100vh" }}>
+        Product not found
+      </div>
+    );
   }
 
   return (
