@@ -1,24 +1,29 @@
-# Fata Car Kit - E-commerce Website
+# Fata's Car Kit 
 
-## Project Overview
-This is a simple e-commerce web application built using React and Vite.
+A full-stack car accessories e-commerce website.
 
-It allows users to:
-- Browse products
-- View product details
-- Add items to cart
-- Checkout orders
-- Register and login
+## Features
+- Product listing
+- Product details page
+- Shopping cart
+- User registration & login
+- Checkout & order system
 
-## Technologies Used
-- React.js
-- TypeScript
-- Tailwind CSS
-- Vite
-- LocalStorage (for data simulation)
+## Tech Stack
+- Frontend: React + TypeScript
+- Backend: Node.js + Express
+- Database: MongoDB
 
-## Note
-This project is a frontend prototype. Backend and database (Node.js & MongoDB) can be added for full functionality and i am working on it.
+## How to run
 
-## Live Demo
-https://fata-car-kit.vercel.app/
+### Backend
+cd backend  
+npm install  
+npm run dev  
+
+### Frontend
+npm install  
+npm run dev  
+
+## Author
+Rana Rodasly
