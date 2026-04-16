@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { productsData } from "../data/products";
+import NavBar from "../components/NavBar";
 
 interface Product {
   _id: string;
@@ -46,7 +47,9 @@ const Products = () => {
   }
 
   return (
+    
     <div style={{ padding: "40px", color: "white", maxWidth: "1400px", margin: "0 auto" }}>
+      <NavBar />
       <h1
         style={{
           fontSize: "56px",
@@ -113,19 +116,18 @@ const Products = () => {
               }}
             >
               <img
-                src={`http://localhost:5000${product.image}`}
-                alt={product.name}
-                style={{
-                  width: "100%",
-                  height: "380px",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-                onError={(e) => {
-                  e.currentTarget.src =
-                    "https://via.placeholder.com/800x500?text=No+Image";
-                }}
-              />
+  src={`http://localhost:5000${product.image}`}
+  alt={product.name}
+  style={{
+    width: "100%",
+    height: "240px",
+    objectFit: "cover",
+    display: "block",
+  }}
+  onError={(e) => {
+    e.currentTarget.src = "http://localhost:5000/images/no-image.jpg";
+  }}
+/>
 
               <div style={{ padding: "28px" }}>
                 <p

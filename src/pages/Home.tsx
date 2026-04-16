@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import { productsData } from "../data/products";
+import NavBar from "../components/NavBar";
 
 interface Product {
   _id: string;
@@ -33,7 +34,9 @@ function Home() {
   }, [products]);
 
   return (
+    
     <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
+      <NavBar />
       <section
         style={{
           padding: "80px 30px",
@@ -176,19 +179,18 @@ function Home() {
                 }}
               >
                 <img
-                  src={`http://localhost:5000${product.image}`}
-                  alt={product.name}
-                  style={{
-                    width: "100%",
-                    height: "240px",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
-                  onError={(e) => {
-                    e.currentTarget.src =
-                      "https://via.placeholder.com/600x400?text=No+Image";
-                  }}
-                />
+  src={`http://localhost:5000${product.image}`}
+  alt={product.name}
+  style={{
+    width: "100%",
+    height: "240px",
+    objectFit: "cover",
+    display: "block",
+  }}
+  onError={(e) => {
+    e.currentTarget.src = "http://localhost:5000/images/no-image.jpg";
+  }}
+/>
 
                 <div style={{ padding: "18px" }}>
                   <p

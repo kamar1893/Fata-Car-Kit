@@ -1,122 +1,105 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    login({
-      name: "User",
-      email,
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    alert("Signed in successfully");
-    navigate("/");
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+
+      // ✅ save user in context
+      login(data);
+
+      // ✅ OPTIONAL (very good): save in localStorage
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      // ✅ redirect to home
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
-      <NavBar />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        color: "#fff",
+        padding: "40px",
+      }}
+    >
+      <h1>Login</h1>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "60px 20px",
-        }}
-      >
-        <div
+      <form onSubmit={submitHandler} style={{ maxWidth: "400px" }}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
           style={{
             width: "100%",
-            maxWidth: "420px",
-            background: "#111",
-            border: "1px solid #333",
-            borderRadius: "12px",
-            padding: "32px",
+            padding: "12px",
+            marginBottom: "16px",
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginBottom: "16px",
+          }}
+        />
+
+        <button
+          type="submit"
+          style={{
+            padding: "12px 20px",
+            background: "#ff5757",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
           }}
         >
-          <h1 style={{ fontSize: "28px", marginBottom: "8px" }}>Welcome Back</h1>
-          <p style={{ color: "#aaa", marginBottom: "24px" }}>
-            Sign in to your account
-          </p>
+          Login
+        </button>
+      </form>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #444",
-                  background: "#222",
-                  color: "#fff",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #444",
-                  background: "#222",
-                  color: "#fff",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                padding: "12px",
-                background: "#ff4d4d",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              Sign In
-            </button>
-          </form>
-
-          <p style={{ marginTop: "18px", textAlign: "center", color: "#aaa" }}>
-            Don't have an account?{" "}
-            <Link to="/register" style={{ color: "#ff4d4d", textDecoration: "none" }}>
-              Register
-            </Link>
-          </p>
-        </div>
-      </div>
-
-      <Footer />
+      <p style={{ marginTop: "16px" }}>
+        Don&apos;t have an account?{" "}
+        <Link to="/register">Register</Link>
+      </p>
     </div>
   );
-};
+}
 
 export default Login;

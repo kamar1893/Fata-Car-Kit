@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 dotenv.config();
-console.log("MONGO_URI:", process.env.MONGO_URI);
+
 const app = express();
 
 app.use(cors());
@@ -18,7 +18,12 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 const productRoutes = require("./routes/productRoutes");
+const userRoutes = require("./routes/userRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");

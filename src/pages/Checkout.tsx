@@ -1,230 +1,121 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-const Checkout = () => {
-  const { cart, clearCart } = useCart();
+function Checkout() {
+  const { cartItems, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    city: "",
-    zip: "",
-    phone: "",
-  });
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [phone, setPhone] = useState("");
 
-  const totalPrice = cart.reduce(
-    (sum: number, item: CartItem) => sum + item.price * item.quantity,
+  const totalPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const placeOrderHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (cart.length === 0) {
+    if (!user) {
+      alert("Please login first");
+      navigate("/login");
+      return;
+    }
+
+    if (cartItems.length === 0) {
       alert("Your cart is empty");
       return;
     }
 
-    const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    try {
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: user.name,
+          items: cartItems,
+          totalPrice,
+          shippingAddress,
+          phone,
+        }),
+      });
 
-    const newOrder = {
-      id: Date.now(),
-      items: cart,
-      total: totalPrice,
-      address: `${form.address}, ${form.city}, ${form.zip}`,
-      phone: form.phone,
-      customerName: form.name,
-      status: "Processing",
-    };
+      const data = await res.json();
 
-    localStorage.setItem("orders", JSON.stringify([...existingOrders, newOrder]));
-    clearCart();
-    alert("Order placed successfully");
-    navigate("/orders");
+      if (!res.ok) {
+        alert(data.message || "Order failed");
+        return;
+      }
+
+      alert("Order placed successfully");
+      clearCart();
+      navigate("/orders");
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
   };
 
-  if (cart.length === 0) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
-        <NavBar />
-        <div style={{ padding: "80px 30px", textAlign: "center" }}>
-          <p style={{ color: "#aaa" }}>
-            Your cart is empty. Add items before checkout.
-          </p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
-    <div style={{ minHeight: "100vh", background: "#000", color: "#fff" }}>
-      <NavBar />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        color: "#fff",
+        padding: "40px",
+      }}
+    >
+      <h1>Checkout</h1>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 30px" }}>
-        <h1 style={{ fontSize: "34px", marginBottom: "28px" }}>Checkout</h1>
-
-        <div
+      <form onSubmit={placeOrderHandler} style={{ maxWidth: "500px" }}>
+        <input
+          type="text"
+          placeholder="Shipping Address"
+          value={shippingAddress}
+          onChange={(e) => setShippingAddress(e.target.value)}
+          required
           style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr",
-            gap: "24px",
+            width: "100%",
+            padding: "12px",
+            marginBottom: "16px",
+          }}
+        />
+
+        <input
+          type="text"
+          placeholder="Phone Number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginBottom: "16px",
+          }}
+        />
+
+        <h3>Total: ${totalPrice.toFixed(2)}</h3>
+
+        <button
+          type="submit"
+          style={{
+            padding: "12px 20px",
+            background: "#ff5757",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
           }}
         >
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              border: "1px solid #333",
-              background: "#111",
-              borderRadius: "12px",
-              padding: "24px",
-            }}
-          >
-            <h2 style={{ marginBottom: "20px" }}>Shipping Information</h2>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>Full Name</label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>Address</label>
-              <input
-                type="text"
-                required
-                value={form.address}
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>City</label>
-              <input
-                type="text"
-                required
-                value={form.city}
-                onChange={(e) => setForm({ ...form, city: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>ZIP Code</label>
-              <input
-                type="text"
-                required
-                value={form.zip}
-                onChange={(e) => setForm({ ...form, zip: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "6px" }}>Phone</label>
-              <input
-                type="tel"
-                required
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                padding: "12px",
-                background: "#ff4d4d",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              Place Order
-            </button>
-          </form>
-
-          <div
-            style={{
-              border: "1px solid #333",
-              background: "#111",
-              borderRadius: "12px",
-              padding: "24px",
-              height: "fit-content",
-            }}
-          >
-            <h2 style={{ marginBottom: "18px" }}>Order Summary</h2>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {cart.map((item: CartItem) => (
-                <div
-                  key={item.id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: "12px",
-                    fontSize: "14px",
-                  }}
-                >
-                  <span style={{ color: "#bbb" }}>
-                    {item.name} × {item.quantity}
-                  </span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
-
-              <div
-                style={{
-                  borderTop: "1px solid #333",
-                  paddingTop: "14px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                }}
-              >
-                <span>Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Footer />
+          Place Order
+        </button>
+      </form>
     </div>
   );
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #444",
-  background: "#222",
-  color: "#fff",
-  outline: "none",
-};
+}
 
 export default Checkout;
