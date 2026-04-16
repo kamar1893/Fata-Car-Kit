@@ -26,4 +26,4 @@ npm install
 npm run dev  
 
 ## Author
-Rana Rodasly
+Kamar Ladkani
